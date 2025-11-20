@@ -29,7 +29,7 @@ export default function ProfileInfoPage() {
     const fetchProfile = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/me', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/me`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (res.ok) {

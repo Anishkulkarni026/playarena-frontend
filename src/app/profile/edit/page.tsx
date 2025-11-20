@@ -26,7 +26,7 @@ export default function EditProfilePage() {
     if (!token) return;
     const fetchProfile = async () => {
       try {
-        const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/me', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/me`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (res.ok) {
@@ -61,7 +61,7 @@ export default function EditProfilePage() {
       // Optimistic UI update (optional, but good UX)
       setAvatarUrl(URL.createObjectURL(file));
 
-      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/avatar', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/avatar`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
@@ -84,7 +84,7 @@ export default function EditProfilePage() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/me', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/profile/me`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

@@ -36,7 +36,7 @@ export default function OwnerDashboardPage() {
     const fetchMyVenues = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/venues/mine', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/venues/mine`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!res.ok) throw new Error('Failed to fetch venues');
@@ -56,7 +56,7 @@ export default function OwnerDashboardPage() {
     if (!token) return;
     const fetchChartData = async () => {
       try {
-        const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/owner/stats/by-venue', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/owner/stats/by-venue`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!res.ok) throw new Error('Failed to fetch stats');

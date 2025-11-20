@@ -41,11 +41,11 @@ export default function VenueDetailPage() {
   const id = params.id as string;
   const router = useRouter();
   const { isLoggedIn, token } = useAuth();
-
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [venue, setVenue] = useState<Venue | null>(null);
   const [photos, setPhotos] = useState<VenuePhoto[]>([]);
   const [bookedSlots, setBookedSlots] = useState<BookedSlot[]>([]);
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [isBooking, setIsBooking] = useState(false);
 
@@ -59,7 +59,7 @@ export default function VenueDetailPage() {
     let h = parseInt(hours, 10);
     const ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12;
-    h = h ? h : 12; 
+    h = h ? h : 12;
     return `${h}:${minutes} ${ampm}`;
   };
 
@@ -113,7 +113,7 @@ export default function VenueDetailPage() {
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/venues/${id}`),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/venues/${id}/photos`)
         ]);
-        
+
         if (venueRes.ok) setVenue(await venueRes.json());
         if (photosRes.ok) setPhotos(await photosRes.json());
       } catch (err) {
@@ -165,7 +165,7 @@ export default function VenueDetailPage() {
     const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
 
     try {
-      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/bookings', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -177,12 +177,12 @@ export default function VenueDetailPage() {
           end_time: endDateTime.toISOString(),
         }),
       });
-      
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Booking failed');
-      
+
       router.push(`/bookings/${data.id}/pay`);
-      
+
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Booking failed');
       const dateStr = selectedDate.toISOString().split('T')[0];
@@ -201,7 +201,7 @@ export default function VenueDetailPage() {
           <p className="text-center text-gray-600">Loading venue...</p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {/* LEFT COLUMN: Photos & Info */}
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -221,8 +221,8 @@ export default function VenueDetailPage() {
                 <div className="p-6">
                   <div className="flex justify-between items-start">
                     <div>
-                       <h1 className="text-3xl font-bold text-gray-900">{venue.name}</h1>
-                       <p className="text-gray-500 mt-1">{venue.address}</p>
+                      <h1 className="text-3xl font-bold text-gray-900">{venue.name}</h1>
+                      <p className="text-gray-500 mt-1">{venue.address}</p>
                     </div>
                     <div className="bg-teal-50 text-teal-700 px-3 py-1 rounded-full text-sm font-bold">
                       {venue.sport_category}
@@ -240,7 +240,7 @@ export default function VenueDetailPage() {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Book Your Slot</h2>
-                
+
                 {/* Date Picker Pills */}
                 <div className="flex gap-2 overflow-x-auto pb-4 mb-2 no-scrollbar">
                   {dateOptions.map((date) => {
@@ -251,11 +251,10 @@ export default function VenueDetailPage() {
                       <button
                         key={date.toISOString()}
                         onClick={() => setSelectedDate(date)}
-                        className={`flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-lg border transition-all ${
-                          isSelected 
-                            ? 'bg-teal-600 border-teal-600 text-white shadow-md' 
+                        className={`flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-lg border transition-all ${isSelected
+                            ? 'bg-teal-600 border-teal-600 text-white shadow-md'
                             : 'bg-white border-gray-200 text-gray-600 hover:border-teal-500'
-                        }`}
+                          }`}
                       >
                         <span className="text-xs font-medium uppercase">{dayName}</span>
                         <span className="text-lg font-bold">{dayNum}</span>
@@ -273,19 +272,18 @@ export default function VenueDetailPage() {
                     {timeSlots.map((time) => {
                       const booked = isSlotBooked(time);
                       const selected = selectedTime === time;
-                      
+
                       return (
                         <button
                           key={time}
                           disabled={booked}
                           onClick={() => setSelectedTime(time)}
-                          className={`py-2 text-sm font-medium rounded border transition-all ${
-                            booked 
-                              ? 'bg-gray-100 text-gray-400 border-transparent cursor-not-allowed line-through' 
+                          className={`py-2 text-sm font-medium rounded border transition-all ${booked
+                              ? 'bg-gray-100 text-gray-400 border-transparent cursor-not-allowed line-through'
                               : selected
                                 ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
                                 : 'bg-white text-teal-700 border-teal-500 hover:bg-teal-50'
-                          }`}
+                            }`}
                         >
                           {formatTime(time)}
                         </button>
@@ -300,19 +298,36 @@ export default function VenueDetailPage() {
                     <span className="text-gray-600">Price</span>
                     <span className="text-xl font-bold text-gray-900">₹{venue.price_per_hour}</span>
                   </div>
-                  
-                  <button 
+
+                  {/* ✅ Terms Checkbox (NEW) */}
+                  <div className="mb-4">
+                    <div className="flex items-start space-x-2">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                      />
+                      <label htmlFor="terms" className="text-sm text-gray-600">
+                        I agree to the <span className="text-teal-600 underline cursor-pointer">Terms & Conditions</span>, including the cancellation policy and venue rules.
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Updated Book Button */}
+                  <button
                     onClick={handleBooking}
-                    disabled={!selectedTime || isBooking}
-                    className={`w-full py-3 rounded-lg font-bold text-lg transition-colors ${
-                      !selectedTime 
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                    disabled={!selectedTime || isBooking || !termsAccepted}
+                    className={`w-full py-3 rounded-lg font-bold text-lg transition-colors ${!selectedTime || !termsAccepted
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : 'bg-teal-600 text-white hover:bg-teal-700 shadow-md'
-                    }`}
+                      }`}
                   >
                     {isBooking ? 'Processing...' : selectedTime ? `Book ${formatTime(selectedTime)}` : 'Select a Time'}
                   </button>
                 </div>
+
 
               </div>
             </div>

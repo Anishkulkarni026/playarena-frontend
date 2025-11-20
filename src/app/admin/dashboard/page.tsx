@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
       setIsLoadingStats(true);
       try {
         // 4. Call the new API endpoint
-        const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/stats/by-venue', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/stats/by-venue`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!res.ok) throw new Error('Failed to fetch stats');

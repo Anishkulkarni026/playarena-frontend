@@ -27,7 +27,7 @@ export default function TurfsPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/venues');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/venues`);
         if (!res.ok) throw new Error('Failed to fetch venues');
         
         const allVenues: Venue[] = await res.json();

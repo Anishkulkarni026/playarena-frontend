@@ -32,7 +32,7 @@ export default function UpcomingBookingsPage() {
     setError(null);
 
     try {
-      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/v1/bookings/mine', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bookings/mine`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
 
